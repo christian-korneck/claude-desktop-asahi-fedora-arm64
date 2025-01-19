@@ -50,7 +50,7 @@ for cmd in 7z wget wrestool icotool convert npx rpm rpmbuild; do
                 DEPS_TO_INSTALL="$DEPS_TO_INSTALL icoutils"
                 ;;
             "convert")
-                DEPS_TO_INSTALL="$DEPS_TO_INSTALL imagemagick"
+                DEPS_TO_INSTALL="$DEPS_TO_INSTALL ImageMagick"
                 ;;
             "npx")
                 DEPS_TO_INSTALL="$DEPS_TO_INSTALL nodejs npm"
