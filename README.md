@@ -2,7 +2,12 @@
 
 If you run into an issue with this build script, make an issue here. Don't bug Anthropic about it - they already have enough on their plates.
 
-# Claude Desktop for Linux
+# Claude Desktop for Linux, but Apple Silicon! (and maybe ARM in general?)
+***This variant of [bsneed's Fedora script](https://github.com/bsneed/claude-desktop-fedora) just modifies some of the build script stuff to point towards the arm64 Claude Desktop .exe and I will not be doing active maintenance on this, use at your own peril and/or boredom.***
+
+The default version of Electron installed for this appears to be screwy, and the version with the best stability for me as of 2025-02-13 was v32.0.0, but your mileage may vary.
+
+___
 
 This project was inspired by [k3d3's claude-desktop-linux-flake](https://github.com/k3d3/claude-desktop-linux-flake) and their [Reddit post](https://www.reddit.com/r/ClaudeAI/comments/1hgsmpq/i_successfully_ran_claude_desktop_natively_on/) about running Claude Desktop natively on Linux. Their work provided valuable insights into the application's structure and the native bindings implementation.
 
