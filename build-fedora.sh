@@ -2,7 +2,7 @@
 set -e
 
 # Update this URL when a new version of Claude Desktop is released
-CLAUDE_DOWNLOAD_URL="https://storage.googleapis.com/osprey-downloads-c02f6a0d-347c-492b-a752-3e0651722e97/nest-win-x64/Claude-Setup-x64.exe"
+CLAUDE_DOWNLOAD_URL="https://storage.googleapis.com/osprey-downloads-c02f6a0d-347c-492b-a752-3e0651722e97/nest-win-arm64/Claude-Setup-arm64.exe"
 
 # Check for Fedora-based system
 if [ ! -f "/etc/fedora-release" ]; then
@@ -87,9 +87,24 @@ if ! check_command "electron"; then
 fi
 
 # Extract version from the installer filename
-VERSION=$(basename "$CLAUDE_DOWNLOAD_URL" | grep -oP 'Claude-Setup-x64\.exe' | sed 's/Claude-Setup-x64\.exe/0.7.9/')
+VERSION=$(basename "$CLAUDE_DOWNLOAD_URL" | grep -oP 'Claude-Setup-arm64\.exe' | sed 's/Claude-Setup-arm64\.exe/0.7.9/')
 PACKAGE_NAME="claude-desktop"
-ARCHITECTURE="amd64"
+# Detect architecture
+ARCH=$(uname -m)
+case $ARCH in
+    aarch64)
+        LIB_DIR="lib64"
+        RPM_ARCH="aarch64"
+        ;;
+    x86_64)
+        LIB_DIR="lib64"
+        RPM_ARCH="x86_64"
+        ;;
+    *)
+        echo "Unsupported architecture: $ARCH"
+        exit 1
+        ;;
+esac
 MAINTAINER="Claude Desktop Linux Maintainers"
 DESCRIPTION="Claude Desktop for Linux"
 
@@ -115,7 +130,7 @@ fi
 
 # Download Claude Windows installer
 echo "📥 Downloading Claude Desktop installer..."
-CLAUDE_EXE="$WORK_DIR/Claude-Setup-x64.exe"
+CLAUDE_EXE="$WORK_DIR/Claude-Setup-arm64.exe"
 if ! curl -o "$CLAUDE_EXE" "$CLAUDE_DOWNLOAD_URL"; then
     echo "❌ Failed to download Claude Desktop installer"
     exit 1
@@ -294,7 +309,7 @@ EOF
 # Create launcher script
 cat > "$INSTALL_DIR/bin/claude-desktop" << EOF
 #!/bin/bash
-electron /usr/lib64/claude-desktop/app.asar "\$@"
+electron /usr/${LIB_DIR}/claude-desktop/app.asar "\$@"
 EOF
 chmod +x "$INSTALL_DIR/bin/claude-desktop"
 
@@ -306,7 +321,7 @@ Release:        1%{?dist}
 Summary:        Claude Desktop for Linux
 License:        Proprietary
 URL:            https://www.anthropic.com
-BuildArch:      x86_64
+BuildArch:      ${RPM_ARCH}
 Requires:       nodejs >= 12.0.0, npm, p7zip
 
 %description
