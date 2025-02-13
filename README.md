@@ -7,6 +7,8 @@ If you run into an issue with this build script, make an issue here. Don't bug A
 
 The default version of Electron installed for this appears to be screwy, and the version with the best stability for me as of 2025-02-13 was v32.0.0, but your mileage may vary.
 
+Modify the below instructions for cloning and building as appropriate, like replacing x86_64 with arm64, and clone this repo, not the other one. You can figure it out. 
+
 ___
 
 This project was inspired by [k3d3's claude-desktop-linux-flake](https://github.com/k3d3/claude-desktop-linux-flake) and their [Reddit post](https://www.reddit.com/r/ClaudeAI/comments/1hgsmpq/i_successfully_ran_claude_desktop_natively_on/) about running Claude Desktop natively on Linux. Their work provided valuable insights into the application's structure and the native bindings implementation.
