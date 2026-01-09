@@ -87,7 +87,7 @@ if ! check_command "electron"; then
 fi
 
 # Extract version from the installer filename
-VERSION=$(basename "$CLAUDE_DOWNLOAD_URL" | grep -oP 'Claude-Setup-arm64\.exe' | sed 's/Claude-Setup-arm64\.exe/0.7.9/')
+VERSION=$(basename "$CLAUDE_DOWNLOAD_URL" | grep -oP 'Claude-Setup-arm64\.exe' | sed 's/Claude-Setup-arm64\.exe/0.10.14/')
 PACKAGE_NAME="claude-desktop"
 # Detect architecture
 ARCH=$(uname -m)
