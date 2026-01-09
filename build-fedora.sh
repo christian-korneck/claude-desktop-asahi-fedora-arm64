@@ -2,7 +2,7 @@
 set -e
 
 # Update this URL when a new version of Claude Desktop is released
-CLAUDE_DOWNLOAD_URL="https://storage.googleapis.com/osprey-downloads-c02f6a0d-347c-492b-a752-3e0651722e97/nest-win-arm64/Claude-Setup-arm64.exe"
+CLAUDE_DOWNLOAD_URL="https://downloads.claude.ai/releases/win32/arm64/1.0.2768/Claude-21341c944a9d74880b52a77c4f1522f47f52d0da.exe"
 
 # Check for Fedora-based system
 if [ ! -f "/etc/fedora-release" ]; then
@@ -86,8 +86,8 @@ if ! check_command "electron"; then
     echo "Electron installed successfully"
 fi
 
-# Extract version from the installer filename
-VERSION=$(basename "$CLAUDE_DOWNLOAD_URL" | grep -oP 'Claude-Setup-arm64\.exe' | sed 's/Claude-Setup-arm64\.exe/0.10.14/')
+# Extract version from the URL path (version is in the URL: .../arm64/VERSION/...)
+VERSION=$(echo "$CLAUDE_DOWNLOAD_URL" | grep -oP '(?<=arm64/)[^/]+')
 PACKAGE_NAME="claude-desktop"
 # Detect architecture
 ARCH=$(uname -m)
@@ -130,7 +130,7 @@ fi
 
 # Download Claude Windows installer
 echo "📥 Downloading Claude Desktop installer..."
-CLAUDE_EXE="$WORK_DIR/Claude-Setup-arm64.exe"
+CLAUDE_EXE="$WORK_DIR/Claude-installer.exe"
 if ! curl -o "$CLAUDE_EXE" "$CLAUDE_DOWNLOAD_URL"; then
     echo "❌ Failed to download Claude Desktop installer"
     exit 1
@@ -196,7 +196,8 @@ npx asar extract app.asar app.asar.contents
 
 # Replace native module with stub implementation
 echo "Creating stub native module..."
-cat > app.asar.contents/node_modules/claude-native/index.js << EOF
+mkdir -p app.asar.contents/node_modules/@ant/claude-native
+cat > app.asar.contents/node_modules/@ant/claude-native/index.js << EOF
 // Stub implementation of claude-native using KeyboardKey enum values
 const KeyboardKey = {
   Backspace: 43,
@@ -238,16 +239,32 @@ module.exports = {
 };
 EOF
 
-# Copy Tray icons
+# Copy Tray icons and other resources
 mkdir -p app.asar.contents/resources
 cp ../lib/net45/resources/Tray* app.asar.contents/resources/
+
+# Copy i18n resources
+mkdir -p app.asar.contents/resources/i18n
+cp ../lib/net45/resources/*.json app.asar.contents/resources/i18n/
+
+# Copy other resources (fonts, images, etc.)
+cp -r ../lib/net45/resources/fonts app.asar.contents/resources/ 2>/dev/null || true
+cp ../lib/net45/resources/*.png app.asar.contents/resources/ 2>/dev/null || true
+cp ../lib/net45/resources/*.clod app.asar.contents/resources/ 2>/dev/null || true
+
+# Patch for Linux: Fix window frame/titlebar
+# The app uses titleBarStyle:"hidden" which doesn't work properly on Linux
+# Change it to show native window decorations
+echo "Patching for Linux window decorations..."
+sed -i 's/titleBarStyle:"hidden"/titleBarStyle:"default"/g' app.asar.contents/.vite/build/index.js
+sed -i 's/titleBarStyle:"hiddenInset"/titleBarStyle:"default"/g' app.asar.contents/.vite/build/index.js
 
 # Repackage app.asar
 npx asar pack app.asar.contents app.asar
 
 # Create native module with keyboard constants
-mkdir -p "$INSTALL_DIR/lib/$PACKAGE_NAME/app.asar.unpacked/node_modules/claude-native"
-cat > "$INSTALL_DIR/lib/$PACKAGE_NAME/app.asar.unpacked/node_modules/claude-native/index.js" << EOF
+mkdir -p "$INSTALL_DIR/lib/$PACKAGE_NAME/app.asar.unpacked/node_modules/@ant/claude-native"
+cat > "$INSTALL_DIR/lib/$PACKAGE_NAME/app.asar.unpacked/node_modules/@ant/claude-native/index.js" << EOF
 // Stub implementation of claude-native using KeyboardKey enum values
 const KeyboardKey = {
   Backspace: 43,
@@ -354,7 +371,7 @@ touch -h %{_datadir}/icons/hicolor >/dev/null 2>&1 || :
 update-desktop-database %{_datadir}/applications || :
 
 %changelog
-* $(date '+%a %b %d %Y') ${MAINTAINER} ${VERSION}-1
+* $(LC_ALL=C date '+%a %b %d %Y') ${MAINTAINER} ${VERSION}-1
 - Initial package
 EOF
 

@@ -1,3 +1,7 @@
+status: works on Fedora Asahi 42 arm64 (as of 1.0.2768 / Jan 2026). Claude Code in Claude Desktop is **not** working (can't install host tools). MCPs are working.
+
+---
+
 ***THIS IS AN UNOFFICIAL BUILD SCRIPT!***
 
 If you run into an issue with this build script, make an issue here. Don't bug Anthropic about it - they already have enough on their plates.
