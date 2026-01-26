@@ -2,7 +2,7 @@
 set -e
 
 # Update this URL when a new version of Claude Desktop is released
-CLAUDE_DOWNLOAD_URL="https://downloads.claude.ai/releases/win32/arm64/1.0.3218/Claude-8679c9141fe246eb88af18130504c064d14b9004.exe"
+CLAUDE_DOWNLOAD_URL="https://downloads.claude.ai/releases/win32/arm64/1.1.886/Claude-ef5d267b24cd6ead766647763ca5bcfae49c823b.exe"
 
 # Check for Fedora-based system
 if [ ! -f "/etc/fedora-release" ]; then
@@ -403,3 +403,8 @@ if ! rpmbuild -bb \
     echo "❌ Failed to build RPM package"
     exit 1
 fi
+
+# Copy RPM to project root (WORK_DIR is build/, we're in build/electron-app/)
+cp "$(pwd)/${RPM_ARCH}/"*.rpm "$WORK_DIR/../"
+echo "✓ RPM package copied to project root"
+ls -la "$WORK_DIR/../"*.rpm
