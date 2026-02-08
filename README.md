@@ -1,19 +1,54 @@
 # Claude Desktop for Asahi Fedora Linux (arm64)
 
-A shell script that downloads and repackages the Claude Desktop for Windows arm64 Electron app and installs it on Asahi Linux Fedora 42 arm64.
+An RPM spec file that downloads and repackages the Claude Desktop Windows Electron app to run natively on Fedora Linux.
 
-Status: works on Fedora Asahi 42 arm64 (as of 1.1.2321 / 08-Feb-2026). Claude Code and MCPs are working.
+Status: Works on Fedora Asahi 42 arm64 (as of 1.1.2321 / 08-Feb-2026). Claude Code and MCPs are working. Other Fedora versions and x86_64 might be working, too but are untested.
 
 I aim to update this repo at least once per month for new Claude Desktop versions.
 
-## Usage:
+## Build requirements
+
+prereqs for building:
 
 ```
-sudo ./build-fedora.sh
-sudo dnf install ./claude-desktop-1.1.2321-1.fc42.aarch64.rpm
+sudo dnf install rpmdevtools p7zip-plugins icoutils nodejs npm desktop-file-utils
 ```
 
-Note: To install, you currently always need to run the build script *and* install the rpm. It is not sufficient to only install the rpm as it depends on node packages that get installed on the system by the build script. (Needs improvement, contributions welcome).
+build the RPM:
+```
+spectool -g -R claude-desktop.spec
+rpmbuild -bb claude-desktop.spec
+```
+The resulting RPM will be in `~/rpmbuild/RPMS/aarch64/` and can get installed with:
+
+```
+sudo dnf install ~/rpmbuild/RPMS/aarch64/claude-desktop-*.rpm
+```
+
+## Alternative: Use `mock`
+
+The `mock` tool provides a sandbox that allows building rpms in a clean chroot without polluting the host. It also allows to target different Fedora versions.
+
+prereqs for building:
+
+```
+sudo dnf install mock rpmdevtools
+```
+build the RPM:
+
+```
+spectool -g -R claude-desktop.spec
+
+mock -r fedora-42-aarch64 --enable-network --spec claude-desktop.spec --sources ~/rpmbuild/SOURCES/
+```
+
+The `--enable-network` flag is required because `%prep` runs `npm install` to fetch electron and asar.
+
+The resulting RPM will be in `/var/lib/mock/fedora-42-aarch64/result/` and can get installed with:
+
+```
+sudo dnf install /var/lib/mock/fedora-42-aarch64/result/claude-desktop-*.rpm
+```
 
 ## Disclaimer
 
