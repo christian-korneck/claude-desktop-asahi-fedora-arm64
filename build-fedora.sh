@@ -2,7 +2,7 @@
 set -e
 
 # Update this URL when a new version of Claude Desktop is released
-CLAUDE_DOWNLOAD_URL="https://downloads.claude.ai/releases/win32/arm64/1.1.886/Claude-ef5d267b24cd6ead766647763ca5bcfae49c823b.exe"
+CLAUDE_DOWNLOAD_URL="https://downloads.claude.ai/releases/win32/arm64/1.1.2321/Claude-495628f91fbfa276fabd6da835ba226fdf5ec68e.exe"
 
 # Check for Fedora-based system
 if [ ! -f "/etc/fedora-release" ]; then
@@ -269,11 +269,6 @@ sed -i 's/if(process\.platform==="darwin")return e==="arm64"?"darwin-arm64":"dar
 # Since we run via electron command, isPackaged is false, so we need to allow file: regardless
 echo "Patching origin validation for file:// URLs..."
 sed -i 's/e\.protocol==="file:"&&[a-zA-Z]*\.app\.isPackaged===!0/e.protocol==="file:"/g' app.asar.contents/.vite/build/index.js
-
-# Patch for Linux: Add stub handlers for ClaudeVM
-# These handlers are not registered on Linux but the renderer keeps calling them
-echo "Patching ClaudeVM handlers..."
-sed -i 's/t\.ipc\.handle("\$eipc_message\$_6a039d75-594a-4e0d-aad1-af47761a02ae_\$_claude\.web_\$_ClaudeCode_\$_getStatus"/t.ipc.handle("\$eipc_message\$_6a039d75-594a-4e0d-aad1-af47761a02ae_\$_claude.web_\$_ClaudeVM_\$_getDownloadStatus",async()=>null),t.ipc.handle("\$eipc_message\$_6a039d75-594a-4e0d-aad1-af47761a02ae_\$_claude.web_\$_ClaudeVM_\$_getRunningStatus",async()=>null),t.ipc.handle("\$eipc_message\$_6a039d75-594a-4e0d-aad1-af47761a02ae_\$_claude.web_\$_ClaudeCode_\$_getStatus"/g' app.asar.contents/.vite/build/index.js
 
 # Repackage app.asar
 npx asar pack app.asar.contents app.asar
