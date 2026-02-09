@@ -1,8 +1,8 @@
-# Claude Desktop - rpm for Fedora Linux (amd64, arm64)& Asahi Fedora Linux (arm64)
+# Claude Desktop - rpm for Fedora Linux (amd64, arm64) & Asahi Fedora Linux (arm64)
 
-An RPM spec file that downloads and repackages the Claude Desktop Windows Electron app to run natively on Fedora Linux.
+An RPM spec file that, if you build it, downloads and repackages the Claude Desktop Windows Electron app so that you can install and run Claude Desktop natively on Fedora Linux.
 
-Status: Works well for me on Fedora Asahi 42 aarch64 (as of 1.1.2321 / 08-Feb-2026). Claude Code and MCPs are working. Other Fedora and EL versions and x86_64 are likely working, too but are only lightly tested as I work on a Macbook (feedback appreciated).
+Status: Works well for me on Fedora Asahi 42 aarch64 (as of 1.1.2321 / 08-Feb-2026). Claude Code and MCPs are working. Other Fedora and EL versions and x86_64 are likely working, too but are only lightly tested (as I work on a Macbook). Feedback always appreciated.
 
 I aim to update this repo at least once per month for new Claude Desktop versions.
 
